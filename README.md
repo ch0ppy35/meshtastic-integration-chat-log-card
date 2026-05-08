@@ -2,41 +2,71 @@
 
 A custom [Lovelace](https://www.home-assistant.io/dashboards/) card for [Home Assistant](https://www.home-assistant.io/) that displays Meshtastic channel messages recorded by the [`meshtastic` integration](https://github.com/meshtastic/home-assistant).
 
+## Screenshots
+
+<!-- TODO: replace with a real screenshot -->
+![meshtastic-chat-card](docs/screenshot-placeholder.png)
+
 ## Features
 
 - **History backfill** – on load, pulls up to 7 days of past messages from the HA logbook (`logbook/get_events`).
 - **Live updates** – subscribes to the `meshtastic_message_log` event bus so new messages appear instantly without a page refresh.
-- **Auto-scroll** – automatically scrolls to the latest message; pauses auto-scroll when you scroll up, and resumes when you scroll back to the bottom.
+- **Auto-scroll** – automatically scrolls to the latest message; pauses auto-scroll when you scroll away from the newest edge, and resumes when you scroll back.
+- **Sort order** – default to oldest-first or newest-first via config, and flip it on the fly with the ↑/↓ button in the card header.
 - **PKI / direct-message badge** – optionally shows a 🔒 badge next to messages delivered over an encrypted direct link.
 - **Visual editor** – all options are configurable through the Lovelace UI editor; no YAML required.
 - **Channel auto-discovery** – when adding a new card, the editor pre-selects the primary Meshtastic channel entity if one exists.
 - **Message deduplication** – messages received from both history and the live event stream are deduplicated so nothing appears twice.
 
-## Requirements
-
-- Home Assistant with the [`meshtastic` custom integration](https://github.com/meshtastic/home-assistant) installed and configured.
-- At least one Meshtastic gateway device added to HA with a channel entity (`device_class: channel`).
-
 ## Installation
 
-### HACS (recommended)
+### Prerequisites
 
-1. Open **HACS → Frontend** in Home Assistant.
-2. Click the three-dot menu → **Custom repositories**.
-3. Add `https://github.com/ch0ppy35/meshtastic-integration-chat-log-card` with category **Dashboard**.
-4. Search for **Meshtastic Chat** and install it.
-5. Reload your browser.
+> [!WARNING]
+> Before using this card, please ensure you have the [Meshtastic integration](https://github.com/meshtastic/home-assistant) installed in your Home Assistant instance, with at least one gateway device exposing a channel entity (`device_class: channel`).
 
-### Manual
+### HACS (Recommended)
 
-1. Download `meshtastic-chat-card.js` from the [latest release](https://github.com/ch0ppy35/meshtastic-integration-chat-log-card/releases).
-2. Copy the file to `config/www/meshtastic-chat-card.js` on your Home Assistant instance.
-3. Go to **Settings → Dashboards → Resources** and add `/local/meshtastic-chat-card.js` as a **JavaScript module**.
+1. Open HACS in your Home Assistant instance
+2. Click the menu icon in the top right and select "Custom repositories"
+3. Add this repository URL and select "Dashboard" as the category
+   - `https://github.com/mikemiller35/meshtastic-integration-chat-log-card`
+4. Click "Install"
+5. Reload your browser
+
+### Manual Installation
+
+1. Download the `meshtastic-chat-card.js` file from the [latest release](https://github.com/mikemiller35/meshtastic-integration-chat-log-card/releases).
+2. Copy it to your `www/community/meshtastic-chat-card/` folder.
+3. Add the following to your `configuration.yaml` (or add as a resource in the Dashboards menu):
+
+```yaml
+lovelace:
+  resources:
+    - url: /local/community/meshtastic-chat-card/meshtastic-chat-card.js
+      type: module
+```
+
 4. Reload your browser.
 
 ## Usage
 
-Add the card via the Lovelace UI (**Add card → Meshtastic Chat**) or paste the YAML directly:
+Add the card to your dashboard using the UI editor or YAML:
+
+### Card Editor
+
+The card is fully configurable through the card editor, allowing you to customize:
+
+- Channel entity selection (auto-discovers the primary Meshtastic channel)
+- Card title
+- Message limit
+- Timestamp display
+- PKI / direct-message badge
+- Sort order
+
+### YAML
+
+This is the most minimal configuration needed to get started:
 
 ```yaml
 type: custom:meshtastic-chat-card
@@ -50,8 +80,9 @@ channel_entity: meshtastic.my_gateway_channel_primary
 | `channel_entity`  | string  | —       | **Required.** Entity ID of the Meshtastic channel to display (`device_class: channel`). |
 | `title`           | string  | —       | Card title. Defaults to the channel entity's `friendly_name`.               |
 | `limit`           | number  | `200`   | Maximum number of messages to keep rendered (oldest are dropped first).     |
-| `show_timestamps` | boolean | `true`  | Show the `HH:MM` timestamp at the start of each message row.                |
+| `show_timestamps` | boolean | `true`  | Show the date + time (e.g. `May 7, 14:30`) at the start of each message row. Hover the row for full second-precision. |
 | `show_pki_badge`  | boolean | `true`  | Show a 🔒 badge on messages delivered via PKI / direct encrypted link.      |
+| `sort_order`      | string  | `asc`   | `asc` (oldest first, newest at bottom) or `desc` (newest first, at top). The header button overrides this for the current session. |
 
 ### Full YAML example
 
@@ -62,7 +93,24 @@ title: "Base Camp Chat"
 limit: 100
 show_timestamps: true
 show_pki_badge: true
+sort_order: asc
 ```
+
+### Finding Your Channel Entity
+
+If you're unsure which channel entity to use, here are a couple of ways to find it:
+
+#### Method 1: Use the Card Editor (Recommended)
+
+1. Add the card through the visual editor
+2. The editor will pre-select the primary Meshtastic channel entity if one exists
+3. Click "Show Code Editor" to see the generated YAML and copy the `channel_entity` value
+
+#### Method 2: Developer Tools
+
+1. Go to **Developer Tools** → **States**
+2. Filter for `meshtastic.` and look for entities with `device_class: channel`
+3. Use the entity ID (e.g. `meshtastic.my_gateway_channel_primary`)
 
 ## Development
 

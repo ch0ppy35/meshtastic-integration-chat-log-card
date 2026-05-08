@@ -14,6 +14,7 @@ export interface ChatCardConfig {
   limit?: number;
   show_timestamps?: boolean;
   show_pki_badge?: boolean;
+  sort_order?: 'asc' | 'desc';
 }
 
 export const DEFAULT_LIMIT = 200;

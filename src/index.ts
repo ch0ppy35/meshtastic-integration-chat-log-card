@@ -56,6 +56,7 @@ export class MeshtasticChatCard extends LitElement {
   @state() private _messages: ChatMessage[] = [];
   @state() private _error?: string;
   @state() private _loading = false;
+  @state() private _sortOverride?: 'asc' | 'desc';
 
   private _unsubscribe?: Unsubscribe;
   private _subscribedEntity?: string;
@@ -80,6 +81,18 @@ export class MeshtasticChatCard extends LitElement {
         },
         { name: 'show_timestamps', selector: { boolean: {} } },
         { name: 'show_pki_badge', selector: { boolean: {} } },
+        {
+          name: 'sort_order',
+          selector: {
+            select: {
+              mode: 'dropdown',
+              options: [
+                { value: 'asc', label: 'Oldest first' },
+                { value: 'desc', label: 'Newest first' },
+              ],
+            },
+          },
+        },
       ],
       assertConfig: (config: ChatCardConfig) => {
         if (!config.channel_entity || typeof config.channel_entity !== 'string') {
@@ -102,6 +115,7 @@ export class MeshtasticChatCard extends LitElement {
       limit: DEFAULT_LIMIT,
       show_timestamps: true,
       show_pki_badge: true,
+      sort_order: 'asc',
     };
   }
 
@@ -119,6 +133,7 @@ export class MeshtasticChatCard extends LitElement {
       limit: DEFAULT_LIMIT,
       show_timestamps: true,
       show_pki_badge: true,
+      sort_order: 'asc',
       ...config,
     };
   }
@@ -169,6 +184,7 @@ export class MeshtasticChatCard extends LitElement {
     this._error = undefined;
     this._messages = [];
     this._loading = true;
+    this._sortOverride = undefined;
     try {
       const [history, unsub] = await Promise.all([
         loadHistory(this.hass, entityId),
@@ -210,7 +226,7 @@ export class MeshtasticChatCard extends LitElement {
 
   protected updated(changed: PropertyValues): void {
     if (changed.has('_messages')) {
-      if (this._autoStick) this._scrollToBottom();
+      if (this._autoStick) this._scrollToNewest();
       // Deterministically clear flash ids after the animation completes,
       // rather than racing the render with a microtask. The 1300ms is a
       // little longer than the 1.2s `flash` keyframe in styles.ts.
@@ -229,24 +245,42 @@ export class MeshtasticChatCard extends LitElement {
 
   private _onScroll = (ev: Event): void => {
     const el = ev.currentTarget as HTMLElement;
-    const distance = el.scrollHeight - el.scrollTop - el.clientHeight;
+    const distance = this._sortOrder() === 'desc'
+      ? el.scrollTop
+      : el.scrollHeight - el.scrollTop - el.clientHeight;
     this._autoStick = distance < 24;
   };
 
-  private _scrollToBottom(): void {
+  private _scrollToNewest(): void {
     const el = this._scrollEl ?? this.renderRoot.querySelector<HTMLElement>('.messages');
     this._scrollEl = el;
     if (!el) return;
+    const desc = this._sortOrder() === 'desc';
     // Defer to after the DOM has actually rendered the new row.
     requestAnimationFrame(() => {
-      el.scrollTop = el.scrollHeight;
+      el.scrollTop = desc ? 0 : el.scrollHeight;
     });
   }
+
+  private _sortOrder(): 'asc' | 'desc' {
+    return this._sortOverride ?? this._config?.sort_order ?? 'asc';
+  }
+
+  private _toggleSortOrder = (): void => {
+    this._sortOverride = this._sortOrder() === 'asc' ? 'desc' : 'asc';
+    this._autoStick = true;
+    this._scrollToNewest();
+  };
 
   private _formatTime(iso: string): string {
     const d = new Date(iso);
     if (Number.isNaN(d.getTime())) return '';
-    return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+    return d.toLocaleString(undefined, {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   }
 
   private _renderRow(msg: ChatMessage): TemplateResult {
@@ -283,6 +317,15 @@ export class MeshtasticChatCard extends LitElement {
             ${this._loading
               ? 'Loading…'
               : `${String(this._messages.length)} message${this._messages.length === 1 ? '' : 's'}`}
+            <button
+              class="sort-toggle"
+              type="button"
+              title=${this._sortOrder() === 'desc' ? 'Newest first (click to flip)' : 'Oldest first (click to flip)'}
+              aria-label=${this._sortOrder() === 'desc' ? 'Sort oldest first' : 'Sort newest first'}
+              @click=${this._toggleSortOrder}
+            >
+              ${this._sortOrder() === 'desc' ? '↓' : '↑'}
+            </button>
           </div>
         </div>
         ${this._error ? html`<div class="error">${this._error}</div>` : nothing}
@@ -294,7 +337,7 @@ export class MeshtasticChatCard extends LitElement {
             ? html`<div class="empty">No messages yet.</div>`
             : nothing}
           ${repeat(
-            this._messages,
+            this._sortOrder() === 'desc' ? [...this._messages].reverse() : this._messages,
             (m) => m.id,
             (m) => this._renderRow(m),
           )}
