@@ -5,7 +5,7 @@ A custom [Lovelace](https://www.home-assistant.io/dashboards/) card for [Home As
 ## Screenshots
 
 <!-- TODO: replace with a real screenshot -->
-![meshtastic-chat-card](docs/screenshot-placeholder.png)
+![meshtastic-chat-card](.github/images/screenshot.png)
 
 ## Features
 
@@ -16,7 +16,6 @@ A custom [Lovelace](https://www.home-assistant.io/dashboards/) card for [Home As
 - **PKI / direct-message badge** – optionally shows a 🔒 badge next to messages delivered over an encrypted direct link.
 - **Visual editor** – all options are configurable through the Lovelace UI editor; no YAML required.
 - **Channel auto-discovery** – when adding a new card, the editor pre-selects the primary Meshtastic channel entity if one exists.
-- **Message deduplication** – messages received from both history and the live event stream are deduplicated so nothing appears twice.
 
 ## Installation
 
@@ -82,7 +81,7 @@ channel_entity: meshtastic.my_gateway_channel_primary
 | `limit`           | number  | `200`   | Maximum number of messages to keep rendered (oldest are dropped first).     |
 | `show_timestamps` | boolean | `true`  | Show the date + time (e.g. `May 7, 14:30`) at the start of each message row. Hover the row for full second-precision. |
 | `show_pki_badge`  | boolean | `true`  | Show a 🔒 badge on messages delivered via PKI / direct encrypted link.      |
-| `sort_order`      | string  | `asc`   | `asc` (oldest first, newest at bottom) or `desc` (newest first, at top). The header button overrides this for the current session. |
+| `sort_order`      | string  | `desc`  | `desc` (newest first, at top) or `asc` (oldest first, newest at bottom). The header button overrides this for the current session. |
 
 ### Full YAML example
 
@@ -93,7 +92,7 @@ title: "Base Camp Chat"
 limit: 100
 show_timestamps: true
 show_pki_badge: true
-sort_order: asc
+sort_order: desc
 ```
 
 ### Finding Your Channel Entity

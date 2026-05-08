@@ -115,7 +115,7 @@ export class MeshtasticChatCard extends LitElement {
       limit: DEFAULT_LIMIT,
       show_timestamps: true,
       show_pki_badge: true,
-      sort_order: 'asc',
+      sort_order: 'desc',
     };
   }
 
@@ -133,7 +133,7 @@ export class MeshtasticChatCard extends LitElement {
       limit: DEFAULT_LIMIT,
       show_timestamps: true,
       show_pki_badge: true,
-      sort_order: 'asc',
+      sort_order: 'desc',
       ...config,
     };
   }
@@ -263,7 +263,7 @@ export class MeshtasticChatCard extends LitElement {
   }
 
   private _sortOrder(): 'asc' | 'desc' {
-    return this._sortOverride ?? this._config?.sort_order ?? 'asc';
+    return this._sortOverride ?? this._config?.sort_order ?? 'desc';
   }
 
   private _toggleSortOrder = (): void => {
