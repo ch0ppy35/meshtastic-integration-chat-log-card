@@ -1,5 +1,4 @@
-import { type HomeAssistant } from 'custom-card-helpers';
-
+import { type HomeAssistant } from './ha-types';
 import {
   MESHTASTIC_MESSAGE_LOG_EVENT,
   type ChatMessage,

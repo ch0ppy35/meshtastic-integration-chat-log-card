@@ -70,14 +70,55 @@ show_pki_badge: true
 # Install dependencies
 yarn install
 
-# Start a development server with live rebuild (sets DEV=true in index.ts)
+# Start the dev rollup (rebuild on save, serves the bundle on :5001)
 yarn start
 
 # Production build → dist/meshtastic-chat-card.js
 yarn build
 
+# Type-check (uses tsconfig.test.json so test files are included)
+yarn typecheck
+
 # Lint
 yarn lint
 ```
 
-The development build registers the card as `meshtastic-chat-card-dev` so it can coexist with a production build in the same HA instance. Set `DEV = false` in `src/index.ts` before cutting a release.
+The dev build registers the card as `meshtastic-chat-card-dev` so it can coexist with the production card in the same HA instance. The `DEV` flag is injected at build time by `@rollup/plugin-replace` (`true` in `rollup.config.dev.js`, `false` in `rollup.config.js`) — no manual flipping required before cutting a release.
+
+### Where the dev bundle is written
+
+By default `yarn start` writes to `./dist-dev/meshtastic-chat-card.js`. To live-reload directly into a Home Assistant instance, point `DEV_OUTPUT_DIR` at your HA `www` directory:
+
+```bash
+DEV_OUTPUT_DIR=/path/to/homeassistant/config/www yarn start
+```
+
+Then in HA, register the resource at **Settings → Dashboards → Resources** as `/local/meshtastic-chat-card.js` with type **JavaScript module** ([HA docs](https://developers.home-assistant.io/docs/frontend/custom-ui/registering-resources)).
+
+### Testing the live message path without a radio
+
+The card subscribes to the `meshtastic_message_log` event bus. To exercise the live render path without a real Meshtastic gateway, fire a fake event from HA's **Developer Tools → Events**:
+
+- Event type: `meshtastic_message_log`
+- Event data:
+  ```yaml
+  entity_id: meshtastic.your_channel_entity
+  from_name: Tester
+  message: hello from devtools
+  pki: false
+  ```
+
+### Testing
+
+```bash
+# Run the unit and component test suites
+yarn test
+
+# Watch mode
+yarn test:watch
+
+# Coverage report
+yarn test:coverage
+```
+
+Tests live next to the source under `src/__tests__/` and use Jest with `ts-jest` (ESM mode). Pure helpers (`messages.ts`, `history.ts`, `discovery.ts`, `live.ts`) run in the default `node` environment; the Lit render smoke test opts into `jsdom` via a per-file docblock.
