@@ -1,8 +1,3 @@
-// Pure helpers for managing the in-memory message buffer rendered by the card.
-//
-// These are deliberately framework-free so they can be exercised with simple
-// unit tests (no Lit, no Home Assistant, no DOM).
-
 import type { ChatMessage } from './types';
 
 // Trim the oldest messages so that the buffer never exceeds `limit`.

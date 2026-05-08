@@ -10,12 +10,6 @@ A custom [Lovelace](https://www.home-assistant.io/dashboards/) card for [Home As
 ## Features
 
 - **History backfill** – on load, pulls up to 7 days of past messages from the HA logbook (`logbook/get_events`).
-- **Live updates** – subscribes to the `meshtastic_message_log` event bus so new messages appear instantly without a page refresh.
-- **Auto-scroll** – automatically scrolls to the latest message; pauses auto-scroll when you scroll away from the newest edge, and resumes when you scroll back.
-- **Sort order** – default to oldest-first or newest-first via config, and flip it on the fly with the ↑/↓ button in the card header.
-- **PKI / direct-message badge** – optionally shows a 🔒 badge next to messages delivered over an encrypted direct link.
-- **Visual editor** – all options are configurable through the Lovelace UI editor; no YAML required.
-- **Channel auto-discovery** – when adding a new card, the editor pre-selects the primary Meshtastic channel entity if one exists.
 
 ## Installation
 
@@ -29,13 +23,13 @@ A custom [Lovelace](https://www.home-assistant.io/dashboards/) card for [Home As
 1. Open HACS in your Home Assistant instance
 2. Click the menu icon in the top right and select "Custom repositories"
 3. Add this repository URL and select "Dashboard" as the category
-   - `https://github.com/mikemiller35/meshtastic-integration-chat-log-card`
+   - `https://github.com/ch0ppy35/meshtastic-integration-chat-log-card`
 4. Click "Install"
 5. Reload your browser
 
 ### Manual Installation
 
-1. Download the `meshtastic-chat-card.js` file from the [latest release](https://github.com/mikemiller35/meshtastic-integration-chat-log-card/releases).
+1. Download the `meshtastic-chat-card.js` file from the [latest release](https://github.com/ch0ppy35/meshtastic-integration-chat-log-card/releases).
 2. Copy it to your `www/community/meshtastic-chat-card/` folder.
 3. Add the following to your `configuration.yaml` (or add as a resource in the Dashboards menu):
 
@@ -46,7 +40,7 @@ lovelace:
       type: module
 ```
 
-4. Reload your browser.
+1. Reload your browser.
 
 ## Usage
 
@@ -74,14 +68,14 @@ channel_entity: meshtastic.my_gateway_channel_primary
 
 ### Configuration options
 
-| Option            | Type    | Default | Description                                                                 |
-|-------------------|---------|---------|-----------------------------------------------------------------------------|
-| `channel_entity`  | string  | —       | **Required.** Entity ID of the Meshtastic channel to display (`device_class: channel`). |
-| `title`           | string  | —       | Card title. Defaults to the channel entity's `friendly_name`.               |
-| `limit`           | number  | `200`   | Maximum number of messages to keep rendered (oldest are dropped first).     |
-| `show_timestamps` | boolean | `true`  | Show the date + time (e.g. `May 7, 14:30`) at the start of each message row. Hover the row for full second-precision. |
-| `show_pki_badge`  | boolean | `true`  | Show a 🔒 badge on messages delivered via PKI / direct encrypted link.      |
-| `sort_order`      | string  | `desc`  | `desc` (newest first, at top) or `asc` (oldest first, newest at bottom). The header button overrides this for the current session. |
+| Option            | Type      | Default | Description                                                                                             |
+| :---------------- | :-------- | :------ | :------------------------------------------------------------------------------------------------------ |
+| `channel_entity`  | `string`  | —       | **Required.** Entity ID of the Meshtastic channel to display (`device_class: channel`).                 |
+| `title`           | `string`  | —       | Card title. Defaults to the channel entity's `friendly_name`.                                           |
+| `limit`           | `number`  | `200`   | Maximum number of messages to render. Oldest messages are dropped first.                                |
+| `show_timestamps` | `boolean` | `true`  | Show the date and time (for example, `May 7, 14:30`) at the start of each message row. Hover a row to see full second-level precision. |
+| `show_pki_badge`  | `boolean` | `true`  | Show a 🔒 badge on messages delivered via a PKI/direct encrypted link.                                  |
+| `sort_order`      | `string`  | `desc`  | `desc` = newest messages first (top), `asc` = oldest messages first (bottom). The header button overrides this setting for the current session.|
 
 ### Full YAML example
 
@@ -148,6 +142,7 @@ The card subscribes to the `meshtastic_message_log` event bus. To exercise the l
 
 - Event type: `meshtastic_message_log`
 - Event data:
+
   ```yaml
   entity_id: meshtastic.your_channel_entity
   from_name: Tester

@@ -1,5 +1,3 @@
-// Types for the Meshtastic Chat card.
-//
 // Mirrors the wire formats produced by the upstream `meshtastic`
 // Home Assistant integration (see custom_components/meshtastic/{const,logbook}.py).
 
