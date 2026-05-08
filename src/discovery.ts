@@ -13,11 +13,7 @@ export type ChannelState = HassEntity & {
 export const listChannelStates = (hass: HomeAssistant): ChannelState[] => {
   return Object.values(hass.states).filter((s): s is ChannelState => {
     const attrs = s.attributes as MeshtasticChannelStateAttrs;
-    return (
-      attrs.device_class === 'channel' &&
-      typeof s.entity_id === 'string' &&
-      s.entity_id.startsWith('meshtastic.')
-    );
+    return attrs.device_class === 'channel' && typeof s.entity_id === 'string' && s.entity_id.startsWith('meshtastic.');
   });
 };
 

@@ -9,11 +9,7 @@ export interface HomeAssistant {
   states: Record<string, HassEntity>;
   connection: Connection;
   callWS<T>(msg: Record<string, unknown>): Promise<T>;
-  callService(
-    domain: string,
-    service: string,
-    data?: Record<string, unknown>,
-  ): Promise<unknown>;
+  callService(domain: string, service: string, data?: Record<string, unknown>): Promise<unknown>;
 
   // Optional bits we touch for channel/gateway display fallbacks.
   devices?: Record<string, HomeAssistantDevice>;

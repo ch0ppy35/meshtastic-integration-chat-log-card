@@ -98,10 +98,7 @@ export class MeshtasticChatCard extends LitElement {
         if (!config.channel_entity || typeof config.channel_entity !== 'string') {
           throw new Error('channel_entity is required');
         }
-        if (
-          config.limit !== undefined &&
-          (typeof config.limit !== 'number' || config.limit <= 0)
-        ) {
+        if (config.limit !== undefined && (typeof config.limit !== 'number' || config.limit <= 0)) {
           throw new Error('limit must be a positive number');
         }
       },
@@ -188,7 +185,9 @@ export class MeshtasticChatCard extends LitElement {
     try {
       const [history, unsub] = await Promise.all([
         loadHistory(this.hass, entityId),
-        subscribeMessageLog(this.hass, entityId, (msg) => { this._appendMessage(msg); }),
+        subscribeMessageLog(this.hass, entityId, (msg) => {
+          this._appendMessage(msg);
+        }),
       ]);
       // Guard against teardown/restart while we awaited.
       if (this._subscribedEntity !== entityId) {
@@ -245,9 +244,7 @@ export class MeshtasticChatCard extends LitElement {
 
   private _onScroll = (ev: Event): void => {
     const el = ev.currentTarget as HTMLElement;
-    const distance = this._sortOrder() === 'desc'
-      ? el.scrollTop
-      : el.scrollHeight - el.scrollTop - el.clientHeight;
+    const distance = this._sortOrder() === 'desc' ? el.scrollTop : el.scrollHeight - el.scrollTop - el.clientHeight;
     this._autoStick = distance < 24;
   };
 
@@ -304,10 +301,7 @@ export class MeshtasticChatCard extends LitElement {
       return html`<ha-card><div class="error">Card not configured.</div></ha-card>`;
     }
     const stateObj = this.hass.states[this._config.channel_entity] as HassEntity | undefined;
-    const channelLabel =
-      this._config.title ??
-      stateObj?.attributes.friendly_name ??
-      this._config.channel_entity;
+    const channelLabel = this._config.title ?? stateObj?.attributes.friendly_name ?? this._config.channel_entity;
 
     return html`
       <ha-card>

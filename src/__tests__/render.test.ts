@@ -12,10 +12,7 @@ import { beforeAll, describe, expect, it, jest } from '@jest/globals';
 import type { HomeAssistant } from '../ha-types.js';
 import type { MeshtasticMessageLogEvent } from '../types.js';
 
-type SubscribeEventsFn = (
-  cb: (event: MeshtasticMessageLogEvent) => void,
-  eventType: string,
-) => Promise<() => void>;
+type SubscribeEventsFn = (cb: (event: MeshtasticMessageLogEvent) => void, eventType: string) => Promise<() => void>;
 
 interface FakeConnection {
   subscribeEvents: jest.Mock<SubscribeEventsFn>;
@@ -24,12 +21,10 @@ interface FakeConnection {
 
 const makeConnection = (): FakeConnection => {
   let listener: ((event: MeshtasticMessageLogEvent) => void) | undefined;
-  const subscribeEvents = jest.fn<SubscribeEventsFn>().mockImplementation(
-    (cb) => {
-      listener = cb;
-      return Promise.resolve(() => undefined);
-    },
-  );
+  const subscribeEvents = jest.fn<SubscribeEventsFn>().mockImplementation((cb) => {
+    listener = cb;
+    return Promise.resolve(() => undefined);
+  });
   return {
     subscribeEvents,
     emit: (event) => {

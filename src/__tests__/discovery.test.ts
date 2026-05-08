@@ -17,10 +17,7 @@ const makeHass = (states: Record<string, unknown>, devices?: HomeAssistant['devi
   devices,
 });
 
-const makeChannel = (
-  entity_id: string,
-  attrs: Record<string, unknown> = {},
-): ChannelState => ({
+const makeChannel = (entity_id: string, attrs: Record<string, unknown> = {}): ChannelState => ({
   entity_id,
   state: 'idle',
   attributes: { device_class: 'channel', ...attrs },
@@ -95,9 +92,12 @@ describe('resolveGatewayName', () => {
   });
 
   it('prefers name_by_user over name in the device registry', () => {
-    const hass = makeHass({}, {
-      d1: { name: 'Default', name_by_user: 'My Mesh' },
-    });
+    const hass = makeHass(
+      {},
+      {
+        d1: { name: 'Default', name_by_user: 'My Mesh' },
+      },
+    );
     const ch = makeChannel('meshtastic.x', { friendly_name: 'something' });
     expect(resolveGatewayName(hass, ch)).toBe('My Mesh');
   });
@@ -128,9 +128,7 @@ describe('resolveChannelName', () => {
   });
 
   it('falls back to friendly_name then entity_id', () => {
-    expect(
-      resolveChannelName(makeChannel('meshtastic.a', { friendly_name: 'Whatever' })),
-    ).toBe('Whatever');
+    expect(resolveChannelName(makeChannel('meshtastic.a', { friendly_name: 'Whatever' }))).toBe('Whatever');
     expect(resolveChannelName(makeChannel('meshtastic.b'))).toBe('meshtastic.b');
   });
 });

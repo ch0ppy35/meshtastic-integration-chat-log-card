@@ -61,9 +61,7 @@ export const loadHistory = async (
     // showing nothing.
     const parsed =
       parseLogbookMessage(entry.message) ??
-      (entry.message
-        ? { message: entry.message, fromName: entry.name?.trim() ?? 'Unknown' }
-        : null);
+      (entry.message ? { message: entry.message, fromName: entry.name?.trim() ?? 'Unknown' } : null);
     if (!parsed) continue;
 
     const time = toIsoTime(entry.when);

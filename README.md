@@ -5,6 +5,7 @@ A custom [Lovelace](https://www.home-assistant.io/dashboards/) card for [Home As
 ## Screenshots
 
 <!-- TODO: replace with a real screenshot -->
+
 ![meshtastic-chat-card](.github/images/screenshot.png)
 
 ## Features
@@ -68,21 +69,21 @@ channel_entity: meshtastic.my_gateway_channel_primary
 
 ### Configuration options
 
-| Option            | Type      | Default | Description                                                                                             |
-| :---------------- | :-------- | :------ | :------------------------------------------------------------------------------------------------------ |
-| `channel_entity`  | `string`  | —       | **Required.** Entity ID of the Meshtastic channel to display (`device_class: channel`).                 |
-| `title`           | `string`  | —       | Card title. Defaults to the channel entity's `friendly_name`.                                           |
-| `limit`           | `number`  | `200`   | Maximum number of messages to render. Oldest messages are dropped first.                                |
-| `show_timestamps` | `boolean` | `true`  | Show the date and time (for example, `May 7, 14:30`) at the start of each message row. Hover a row to see full second-level precision. |
-| `show_pki_badge`  | `boolean` | `true`  | Show a 🔒 badge on messages delivered via a PKI/direct encrypted link.                                  |
-| `sort_order`      | `string`  | `desc`  | `desc` = newest messages first (top), `asc` = oldest messages first (bottom). The header button overrides this setting for the current session.|
+| Option            | Type      | Default | Description                                                                                                                                     |
+| :---------------- | :-------- | :------ | :---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `channel_entity`  | `string`  | —       | **Required.** Entity ID of the Meshtastic channel to display (`device_class: channel`).                                                         |
+| `title`           | `string`  | —       | Card title. Defaults to the channel entity's `friendly_name`.                                                                                   |
+| `limit`           | `number`  | `200`   | Maximum number of messages to render. Oldest messages are dropped first.                                                                        |
+| `show_timestamps` | `boolean` | `true`  | Show the date and time (for example, `May 7, 14:30`) at the start of each message row. Hover a row to see full second-level precision.          |
+| `show_pki_badge`  | `boolean` | `true`  | Show a 🔒 badge on messages delivered via a PKI/direct encrypted link.                                                                          |
+| `sort_order`      | `string`  | `desc`  | `desc` = newest messages first (top), `asc` = oldest messages first (bottom). The header button overrides this setting for the current session. |
 
 ### Full YAML example
 
 ```yaml
 type: custom:meshtastic-chat-card
 channel_entity: meshtastic.my_gateway_channel_primary
-title: "Base Camp Chat"
+title: 'Base Camp Chat'
 limit: 100
 show_timestamps: true
 show_pki_badge: true

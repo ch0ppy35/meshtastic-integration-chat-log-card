@@ -4,10 +4,7 @@ import { subscribeMessageLog } from '../live.js';
 import type { HomeAssistant } from '../ha-types.js';
 import type { ChatMessage, MeshtasticMessageLogEvent } from '../types.js';
 
-type SubscribeEventsFn = (
-  cb: (event: MeshtasticMessageLogEvent) => void,
-  eventType: string,
-) => Promise<() => void>;
+type SubscribeEventsFn = (cb: (event: MeshtasticMessageLogEvent) => void, eventType: string) => Promise<() => void>;
 
 interface FakeConnection {
   subscribeEvents: jest.Mock<SubscribeEventsFn>;
@@ -18,12 +15,10 @@ interface FakeConnection {
 const makeConnection = (): FakeConnection => {
   let listener: ((event: MeshtasticMessageLogEvent) => void) | undefined;
   const unsubscribe = jest.fn<() => void>();
-  const subscribeEvents = jest.fn<SubscribeEventsFn>().mockImplementation(
-    (cb) => {
-      listener = cb;
-      return Promise.resolve(unsubscribe);
-    },
-  );
+  const subscribeEvents = jest.fn<SubscribeEventsFn>().mockImplementation((cb) => {
+    listener = cb;
+    return Promise.resolve(unsubscribe);
+  });
   return {
     subscribeEvents,
     unsubscribe,
@@ -55,7 +50,9 @@ describe('subscribeMessageLog', () => {
     const conn = makeConnection();
     const hass = makeHass(conn);
     const received: ChatMessage[] = [];
-    const cb = (msg: ChatMessage) => { received.push(msg); };
+    const cb = (msg: ChatMessage) => {
+      received.push(msg);
+    };
     await subscribeMessageLog(hass, 'meshtastic.ch', cb);
 
     conn.emit({
@@ -75,7 +72,9 @@ describe('subscribeMessageLog', () => {
     const conn = makeConnection();
     const hass = makeHass(conn);
     const received: ChatMessage[] = [];
-    const cb = (msg: ChatMessage) => { received.push(msg); };
+    const cb = (msg: ChatMessage) => {
+      received.push(msg);
+    };
     await subscribeMessageLog(hass, 'meshtastic.ch', cb);
 
     conn.emit({
@@ -100,7 +99,9 @@ describe('subscribeMessageLog', () => {
     const conn = makeConnection();
     const hass = makeHass(conn);
     const received: ChatMessage[] = [];
-    const cb = (msg: ChatMessage) => { received.push(msg); };
+    const cb = (msg: ChatMessage) => {
+      received.push(msg);
+    };
     await subscribeMessageLog(hass, 'meshtastic.ch', cb);
 
     conn.emit({
@@ -136,6 +137,8 @@ describe('subscribeMessageLog', () => {
     const cb = jest.fn();
     const unsub = await subscribeMessageLog(hass, 'meshtastic.ch', cb);
 
-    expect(() => { unsub(); }).not.toThrow();
+    expect(() => {
+      unsub();
+    }).not.toThrow();
   });
 });

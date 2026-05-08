@@ -16,11 +16,7 @@ export interface AppendUniqueResult {
 
 // Append `next` to `msgs` if it isn't already present (by id), then trim to
 // `limit`. Returns the resulting array and whether `next` was added.
-export const appendUnique = (
-  msgs: ChatMessage[],
-  next: ChatMessage,
-  limit: number,
-): AppendUniqueResult => {
+export const appendUnique = (msgs: ChatMessage[], next: ChatMessage, limit: number): AppendUniqueResult => {
   if (msgs.some((m) => m.id === next.id)) {
     return { messages: msgs, appended: false };
   }

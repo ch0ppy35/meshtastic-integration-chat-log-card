@@ -42,9 +42,7 @@ describe('loadHistory', () => {
 
   it('converts numeric float `when` (epoch seconds) to ISO string', async () => {
     const seconds = 1_700_000_000.123;
-    const hass = makeHass([
-      { when: seconds, message: '«x» by y', entity_id: 'meshtastic.ch' },
-    ]);
+    const hass = makeHass([{ when: seconds, message: '«x» by y', entity_id: 'meshtastic.ch' }]);
     const msgs = await loadHistory(hass, 'meshtastic.ch');
     const got = new Date(msgs[0].time).getTime();
     expect(Math.abs(got - seconds * 1000)).toBeLessThan(2);
@@ -52,9 +50,7 @@ describe('loadHistory', () => {
 
   it('preserves ISO string `when` values', async () => {
     const iso = '2023-05-01T12:00:00.000Z';
-    const hass = makeHass([
-      { when: iso, message: '«x» by y', entity_id: 'meshtastic.ch' },
-    ]);
+    const hass = makeHass([{ when: iso, message: '«x» by y', entity_id: 'meshtastic.ch' }]);
     const msgs = await loadHistory(hass, 'meshtastic.ch');
     expect(msgs[0]?.time).toBe(iso);
   });
@@ -108,9 +104,7 @@ describe('loadHistory', () => {
   });
 
   it('uses "Unknown" when fallback has no name', async () => {
-    const hass = makeHass([
-      { when: 1, message: 'plain log line', entity_id: 'meshtastic.ch' },
-    ]);
+    const hass = makeHass([{ when: 1, message: 'plain log line', entity_id: 'meshtastic.ch' }]);
     const msgs = await loadHistory(hass, 'meshtastic.ch');
     expect(msgs[0]?.fromName).toBe('Unknown');
   });
@@ -132,9 +126,7 @@ describe('loadHistory', () => {
   });
 
   it('uses context_id as the message id when provided', async () => {
-    const hass = makeHass([
-      { when: 1, message: '«x» by y', entity_id: 'meshtastic.ch', context_id: 'ctx-123' },
-    ]);
+    const hass = makeHass([{ when: 1, message: '«x» by y', entity_id: 'meshtastic.ch', context_id: 'ctx-123' }]);
     const msgs = await loadHistory(hass, 'meshtastic.ch');
     expect(msgs[0]?.id).toBe('ctx-123');
   });
